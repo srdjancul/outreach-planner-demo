@@ -26,7 +26,7 @@ export type DemoData = {
 };
 
 // Bump when the seed or row shape changes; old saves are then replaced.
-const VERSION = 1;
+const VERSION = 2;
 const KEY = "outreach-planner-demo";
 
 export const DEMO_USER = "demo-user";

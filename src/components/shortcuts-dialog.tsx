@@ -5,6 +5,7 @@ import { Keyboard } from "lucide-react";
 import { Dialog } from "radix-ui";
 
 import { Button } from "@/components/ui/button";
+import { SITE } from "@/lib/site";
 
 const GROUPS: { title: string; rows: [string, string][] }[] = [
   {
@@ -48,6 +49,9 @@ const GROUPS: { title: string; rows: [string, string][] }[] = [
     rows: [["?", "This overview"]],
   },
 ];
+
+const linkClass =
+  "text-neutral-secondary underline hover:text-neutral-primary";
 
 function Key({ children }: { children: string }) {
   return (
@@ -113,6 +117,30 @@ export function ShortcutsDialog() {
               </section>
             ))}
           </div>
+          <p className="border-t border-neutral-secondary pt-4 text-neutral-tertiary">
+            {SITE.author && (
+              <>
+                Built by{" "}
+                <a
+                  href={SITE.author.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className={linkClass}
+                >
+                  {SITE.author.name}
+                </a>
+                {" · "}
+              </>
+            )}
+            <a
+              href={SITE.repo}
+              target="_blank"
+              rel="noreferrer"
+              className={linkClass}
+            >
+              Source on GitHub
+            </a>
+          </p>
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>

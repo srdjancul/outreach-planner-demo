@@ -1,49 +1,110 @@
 # Outreach Planner
 
-An outreach CRM (kanban) and a daily time-blocking planner in one dark,
-keyboard-first app. Built with Next.js 16, TypeScript, Tailwind CSS v4,
-Radix and dnd-kit.
+**An outreach CRM and a daily time-blocking planner in one dark,
+keyboard-first app.**
 
-**This is the demo edition.** It runs entirely in your browser. There's
-no account, no backend and no database to set up. It ships with
-**fictional sample data**: every person, company and note is made up.
-Your edits are saved in your browser's localStorage, and **Reset demo** in
-the top bar restores the sample data.
+**[Live demo →](https://outreach-planner-demo.vercel.app)** · No sign-up.
+It runs in your browser with fictional sample data.
 
-## Features
+![Outreach Planner: kanban board and daily planner](docs/screenshots/hero.jpg)
 
-**Outreach board**: a kanban pipeline for the people you're reaching out to.
+I built it as a daily tool for one job: reaching out to people, and keeping
+track of who replied, who went quiet and where my hours went. This repo is
+the public demo edition. Every person, company and note in it is made up.
 
-- Nine stages: To contact → Contacted → Followed up → Replied →
-  In conversation → Interview → Won / Rejected / Ghosted
-- Three groups: Direct contact, Applied, and Rejected & Ghosted, each with
-  a "View all" page, niche filters and pagination
-- Drag and drop between and within groups (mouse and touch)
-- Every card shows its touch count and days since the last activity. Both
-  are derived from the touch log and never stored (yellow at 7+ days, red
-  at 14+)
-- Contact panel: full touch timeline, log or delete touches, edit, delete
-- Ranked search: first-name matches first, then last names, then companies
-- Quick add with `C`. Logging a touch on a *To contact* person moves them
-  to *Contacted* automatically
+---
 
-**Daily planner**: Monday to Saturday, three blocks per day: research
-(2h), client work (6h) and internal projects (2h).
+## What it does
 
-- Start/stop timer per block, and starting one stops the running one
-- Edit the planned hours per day, and fix tracked time by hand while the
-  timer is stopped
-- Tasks per block, plus unattached day tasks
-- Week view: actual vs planned per category, per day and in total
+### Outreach board
 
-Every change is optimistic: the UI updates instantly, and it reverts with
-a notice if the change fails.
+![Outreach board](docs/screenshots/board.jpg)
 
-## Keyboard
+- **A nine-stage pipeline:** To contact → Contacted → Followed up →
+  Replied → In conversation → Interview → Won / Rejected / Ghosted.
+- **Three groups:** Direct contact, Applied, and Rejected & Ghosted. The
+  home view previews each group, and "View all" opens the full group with
+  niche filters and pagination.
+- **Drag and drop** within and between groups, with mouse or touch.
+- **Activity at a glance:** every card shows its touch count and days since
+  the last activity. The day count turns yellow at 7+ days and red at 14+.
+- **Ranked search** (`/`): first names match first, then last names, then
+  companies and roles.
 
-Press `?` in the app for the full list. The main ones: `C` adds a new
-contact, `/` searches, arrows move between cards, `Ctrl+arrows` moves a
-card, `Enter` opens a contact, `T` jumps to the log-touch form.
+### Contact panel
+
+![Contact panel with touch timeline](docs/screenshots/panel.jpg)
+
+- The full touch timeline (channel, direction, note), newest first.
+- Log a touch in seconds (`T` jumps to the form). Logging one on a *To
+  contact* person moves them to *Contacted* automatically.
+- Edit, change status, or delete. A company note also counts as activity.
+
+### Daily planner
+
+![Daily planner with a running timer](docs/screenshots/planner-day.jpg)
+
+- Three blocks per day, Monday to Saturday: research (2h), client work
+  (6h) and internal projects (2h).
+- **A start/stop timer per block.** Only one runs at a time, so starting
+  one banks the time of the other.
+- Edit planned hours per day, and correct tracked time by hand while the
+  timer is stopped.
+- Tasks per block plus loose day tasks: add, check off, rename, delete.
+
+### Week view
+
+![Week view: actual vs planned](docs/screenshots/planner-week.jpg)
+
+Actual vs planned time per category, per day and in total.
+
+### Keyboard-first and responsive
+
+| | |
+| --- | --- |
+| ![Keyboard shortcuts](docs/screenshots/shortcuts.jpg) | ![Mobile layout](docs/screenshots/mobile.jpg) |
+
+`C` adds a new contact, `/` searches, arrow keys move between cards,
+`Ctrl + arrows` moves a card, `Enter` opens a contact, `?` lists every
+shortcut. On a phone, columns stack and drag-and-drop works by touch.
+
+---
+
+## How it's built
+
+- **Optimistic UI everywhere.** Every action updates the screen instantly,
+  then saves. If the save fails, the change is reverted and a short notice
+  appears. There are no spinners and no waiting.
+- **Derived data, never stored.** Touch count and "last activity" are
+  computed from the touch log, so they can never drift out of sync with
+  it.
+- **Cheap reordering.** Cards use fractional ranks. A drop takes the
+  midpoint between its neighbours, so a move writes one row instead of
+  renumbering a column.
+- **View state lives in the URL.** Group, niche and page are query
+  parameters, so the back button and refresh work and switching views
+  needs no round trip.
+- **One running timer.** Starting a block stops and banks whichever block
+  is running. Tracked time can be edited only while its timer is stopped,
+  so a live timer is never overwritten.
+- **A strict token-based design system.** Every color, size, radius and
+  surface is a token in `src/app/globals.css`. Tailwind's default palette
+  is cleared, so off-system values don't even compile into CSS.
+- **Accessible primitives.** Dialogs, selects and focus management come
+  from Radix. Card navigation, moving and opening all work by keyboard.
+
+**The production version** of this app runs on Supabase: Postgres with
+row-level security on every table, a view for the derived touch stats, and
+timer math in SQL functions on the database clock. This demo swaps that
+for an in-browser store with the same async, validated action API, so
+every component is identical.
+
+### Stack
+
+Next.js 16 (App Router) · React 19 · TypeScript · Tailwind CSS v4 ·
+Radix UI · dnd-kit · Vercel
+
+---
 
 ## Run it locally
 
@@ -56,44 +117,31 @@ npm install
 npm run dev        # http://localhost:3200
 ```
 
-## Deploy your own
+No environment variables, database or accounts are needed. Your edits are
+saved in your browser (localStorage), and **Reset demo** in the top bar
+restores the sample data.
 
-Import the repo in [Vercel](https://vercel.com/new) and accept the
-defaults. No environment variables are needed.
+To deploy your own copy, import the repo in [Vercel](https://vercel.com/new)
+and accept the defaults.
 
-## How the data works
+### Where things live
 
-| File | Role |
+| Path | What |
 | --- | --- |
-| `src/lib/demo/seed.ts` | The fictional sample data. Edit it to change what a fresh visitor sees |
-| `src/lib/demo/store.ts` | A tiny localStorage "database" (one JSON document) |
-| `src/lib/demo/queries.ts` | Reads, including derived touch stats |
-| `src/lib/actions/*.ts` | Writes, validated and async like real server calls |
-| `src/lib/database.types.ts` | Row types, shaped like a Postgres schema |
+| `src/components/board/` | Board, cards, contact panel, quick add |
+| `src/components/planner/` | Day and week views |
+| `src/lib/actions/` | Every write: validated, async, server-action shaped |
+| `src/lib/demo/` | In-browser store, queries and the fictional seed |
+| `src/app/globals.css` | The design tokens |
 
-The components only talk to `src/lib/actions` and `src/lib/demo/queries`,
-so you can swap in a real backend (Supabase, Postgres, an API) by
-replacing those files.
-
-To change the sample data, edit `seed.ts` and bump `VERSION` in
-`store.ts`, so existing browsers pick up the new seed.
-
-## Design
-
-Every token (colors, type scale, spacing, radii, glass surfaces) lives in
-the `@theme` block of `src/app/globals.css`. Tailwind's default palette
-is cleared, so components can only use those tokens. The typeface is
-Hanken Grotesk.
-
-## Scripts
+To change the sample data, edit `src/lib/demo/seed.ts` and bump `VERSION`
+in `src/lib/demo/store.ts`.
 
 ```bash
-npm run dev          # dev server on :3200
-npm run build        # production build
-npm run lint         # eslint
-npm run typecheck    # route typegen + tsc
-npm run verify       # all of the above
+npm run verify     # typecheck + lint + production build
 ```
+
+---
 
 ## License
 

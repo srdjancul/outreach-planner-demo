@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Hanken_Grotesk } from "next/font/google";
+import { SITE } from "@/lib/site";
 import "./globals.css";
 
 // Hanken Grotesk — the free, Google-Fonts successor of HK Grotesk
@@ -10,9 +11,22 @@ const hanken = Hanken_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "Outreach Planner",
-  description:
-    "Outreach CRM (kanban) and daily time-blocking planner. Demo with fictional data.",
+  metadataBase: new URL(SITE.url),
+  title: SITE.name,
+  description: SITE.description,
+  // Link previews (LinkedIn, Slack, X); the image is app/opengraph-image.png.
+  openGraph: {
+    type: "website",
+    url: "/",
+    siteName: SITE.name,
+    title: `${SITE.name}: outreach CRM + daily planner`,
+    description: SITE.description,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${SITE.name}: outreach CRM + daily planner`,
+    description: SITE.description,
+  },
 };
 
 export const viewport: Viewport = {

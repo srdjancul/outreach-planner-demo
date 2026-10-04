@@ -114,20 +114,7 @@ const PIPELINE: [Enums["contact_status"], Enums["contact_approach"], number][] =
     ["ghosted", "applied", 3],
   ];
 
-// Touch history per status: d = sent, r = received, oldest first.
-const HISTORY: Record<Enums["contact_status"], string> = {
-  to_contact: "",
-  contacted: "d",
-  followed_up: "dd",
-  replied: "ddr",
-  in_conversation: "drdr",
-  interview: "drdrr",
-  won: "drdrdr",
-  rejected: "ddr",
-  ghosted: "ddd",
-};
-
-// The first message, by approach; later sent touches are follow-ups.
+// The first message, by approach.
 const FIRST_NOTES: Record<Enums["contact_approach"], string[]> = {
   direct: [
     "Intro message, mentioned their recent product launch",
@@ -139,39 +126,71 @@ const FIRST_NOTES: Record<Enums["contact_approach"], string[]> = {
     "Applied via the careers page, CV + portfolio",
   ],
 };
-const FOLLOW_UP_NOTES = [
-  "Short follow-up: asked if the role is still open",
-  "Shared two relevant case studies",
-  "Thank-you note after the call",
-  "Sent availability for next week",
-  "Shared a quick teardown of their onboarding flow",
-  "",
+
+// Each step after the first message: direction + note options. Read top
+// to bottom, every script is one believable conversation.
+type Step = [Enums["touch_direction"], string[]];
+const FOLLOW_UP: Step = [
+  "sent",
+  [
+    "Short follow-up: asked if the role is still open",
+    "Follow-up with two relevant case studies",
+    "Bumped the thread with a quick teardown of their onboarding",
+  ],
 ];
-const RECEIVED_NOTES: Partial<Record<Enums["contact_status"], string[]>> = {
-  replied: [
+const REPLY: Step = [
+  "received",
+  [
     "Replied: happy to chat next week",
     "Asked for a few more work samples",
     "Forwarded my profile to the design lead",
   ],
-  in_conversation: [
+];
+const AVAILABILITY: Step = [
+  "sent",
+  ["Sent availability for next week", "Shared samples and three time slots"],
+];
+const CALL: Step = [
+  "received",
+  [
     "Call booked for Thursday, 30 min",
-    "Discussed team structure and roadmap",
+    "Intro call done: discussed team and roadmap",
     "Asked about notice period and rates",
   ],
-  interview: [
+];
+const INTERVIEW: Step = [
+  "received",
+  [
     "Interview scheduled with the product team",
     "Sent the take-home brief, due Friday",
-    "Second round confirmed",
   ],
+];
+const SCRIPTS: Record<Enums["contact_status"], Step[]> = {
+  to_contact: [],
+  contacted: [],
+  followed_up: [FOLLOW_UP],
+  replied: [FOLLOW_UP, REPLY],
+  in_conversation: [REPLY, AVAILABILITY, CALL],
+  interview: [REPLY, AVAILABILITY, CALL, INTERVIEW],
   won: [
-    "Offer received, starting next month",
-    "Signed the contract",
+    REPLY,
+    AVAILABILITY,
+    INTERVIEW,
+    ["sent", ["Thank-you note after the final round"]],
+    ["received", ["Offer received, starting next month", "Signed the contract"]],
   ],
   rejected: [
-    "Position filled internally, keep in touch",
-    "Went with a more senior candidate",
-    "Role put on hold until next quarter",
+    FOLLOW_UP,
+    [
+      "received",
+      [
+        "Position filled internally, keep in touch",
+        "Went with a more senior candidate",
+        "Role put on hold until next quarter",
+      ],
+    ],
   ],
+  ghosted: [FOLLOW_UP, ["sent", ["Last check-in, closing the loop"]]],
 };
 
 const COMPANY_NOTES = [
@@ -221,7 +240,10 @@ export function buildSeed(now: Date) {
       const contactId = id();
 
       // Walk back from the latest touch so the history reads in order.
-      const history = HISTORY[status];
+      const history: Step[] =
+        status === "to_contact"
+          ? []
+          : [["sent", FIRST_NOTES[approach]], ...SCRIPTS[status]];
       const lastDaysAgo =
         status === "ghosted"
           ? between(16, 40)
@@ -229,12 +251,17 @@ export function buildSeed(now: Date) {
             ? between(5, 30)
             : status === "won"
               ? between(2, 12)
-              : between(0, 18);
-      let daysAgo = lastDaysAgo + (history.length - 1) * between(2, 5);
-      const createdAt = new Date(now.getTime() - (daysAgo + between(1, 6)) * DAY_MS);
+              : status === "interview" && i === 0
+                ? 0
+                : between(1, 20);
+      const gaps = history.map(() => between(2, 5));
+      let daysAgo = lastDaysAgo + gaps.slice(1).reduce((a, b) => a + b, 0);
+      const createdAt = new Date(
+        now.getTime() - (daysAgo + between(1, 6)) * DAY_MS,
+      );
 
-      for (let t = 0; t < history.length; t++) {
-        const received = history[t] === "r";
+      history.forEach(([direction, notes], t) => {
+        if (t > 0) daysAgo -= gaps[t];
         let when = atHour(
           new Date(now.getTime() - daysAgo * DAY_MS),
           between(9, 17),
@@ -242,27 +269,17 @@ export function buildSeed(now: Date) {
         );
         if (when.getTime() > now.getTime())
           when = new Date(now.getTime() - between(1, 4) * 60 * 60 * 1000);
-        const receivedNotes = RECEIVED_NOTES[status] ?? RECEIVED_NOTES.replied!;
         touches.push({
           id: id(),
           user_id: USER,
           contact_id: contactId,
           happened_at: when.toISOString(),
           channel: pick(["email", "linkedin", "linkedin", "both"] as const),
-          direction: received ? "received" : "sent",
-          note:
-            received && t === history.length - 1
-              ? pick(receivedNotes)
-              : received
-                ? pick(RECEIVED_NOTES.replied!)
-                : t === 0
-                  ? pick(FIRST_NOTES[approach])
-                  : pick(FOLLOW_UP_NOTES),
+          direction,
+          note: pick(notes),
           created_at: when.toISOString(),
         });
-        daysAgo -= between(2, 5);
-        if (daysAgo < lastDaysAgo) daysAgo = lastDaysAgo;
-      }
+      });
 
       const hasNote = rand() < 0.35;
       contacts.push({
@@ -378,7 +395,7 @@ function seedPlanner(
         updated_at: stamp,
       });
 
-      const count = between(1, 3);
+      const count = isToday ? between(2, 3) : between(1, 3);
       const titles = new Set<string>();
       while (titles.size < count) titles.add(pick(TASKS[category.key]));
       let n = 0;
