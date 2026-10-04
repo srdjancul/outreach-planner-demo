@@ -1,0 +1,105 @@
+import * as React from "react";
+import { cva, type VariantProps } from "class-variance-authority";
+import { Slot } from "radix-ui";
+
+import { cn } from "@/lib/utils";
+
+// Restyled to the Figma "badge" component (node 14006:1916).
+const badgeVariants = cva(
+  // Spec: badge padding 12x8, radius 6.
+  "inline-flex shrink-0 items-center gap-1 rounded-base border border-transparent px-3 py-2 text-sm leading-none font-regular whitespace-nowrap [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4",
+  {
+    variants: {
+      variant: {
+        primary: "bg-neutral-inverse text-neutral-inverse",
+        // Spec: uncolored badges carry a white/10 stroke.
+        secondary:
+          "border-neutral-secondary bg-neutral-secondary text-neutral-primary",
+        destructive: "bg-danger text-neutral-primary",
+        success: "bg-success text-neutral-inverse",
+        info: "bg-info text-neutral-primary",
+        warning: "bg-warning text-neutral-inverse",
+        pink: "bg-accent-pink text-neutral-inverse",
+      },
+      appearance: {
+        filled: "",
+        outline: "",
+        // Finance-app chip: 10% tint fill + border, full-strength text.
+        soft: "",
+      },
+    },
+    compoundVariants: [
+      {
+        variant: "secondary",
+        appearance: "outline",
+        className: "border-neutral-primary bg-neutral-primary",
+      },
+      {
+        variant: "destructive",
+        appearance: "soft",
+        className: "border-danger-soft bg-danger-soft text-danger",
+      },
+      {
+        variant: "success",
+        appearance: "soft",
+        className: "border-success-soft bg-success-soft text-success",
+      },
+      {
+        variant: "info",
+        appearance: "soft",
+        className: "border-info-soft bg-info-soft text-info",
+      },
+      {
+        variant: "warning",
+        appearance: "soft",
+        className: "border-warning-soft bg-warning-soft text-warning",
+      },
+      {
+        variant: "pink",
+        appearance: "soft",
+        className: "border-pink-soft bg-pink-soft text-pink",
+      },
+    ],
+    defaultVariants: {
+      variant: "primary",
+      appearance: "filled",
+    },
+  },
+);
+
+function Badge({
+  className,
+  variant,
+  appearance,
+  asChild = false,
+  dot = false,
+  children,
+  ...props
+}: React.ComponentProps<"span"> &
+  VariantProps<typeof badgeVariants> & {
+    asChild?: boolean;
+    // 6px cyan marker for informational chips (approach, channel, …).
+    dot?: boolean;
+  }) {
+  const Comp = asChild ? Slot.Root : "span";
+
+  return (
+    <Comp
+      data-slot="badge"
+      data-variant={variant}
+      data-appearance={appearance}
+      className={cn(badgeVariants({ variant, appearance, className }))}
+      {...props}
+    >
+      {dot && (
+        <span
+          aria-hidden
+          className="size-dot shrink-0 rounded-full bg-brand-primary"
+        />
+      )}
+      {children}
+    </Comp>
+  );
+}
+
+export { Badge, badgeVariants };

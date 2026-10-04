@@ -1,0 +1,486 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/*
+ * Design tokens — approved restyle, 2026-09-19.
+ *
+ * Palette source: Figma "Personal Finance App" (file W6Uf2Q34FoyGmYLDFuvaqO,
+ * node 2031:159): near-black ground #0C0D0D, ink #F8F8F8/#9C9C9C, accent
+ * neon #CCFF04, blue #4288F6, pink #F472B6, yellow #DEC763, error #FB505F.
+ * Card style from node 46993:5557: white-alpha gradient + 20px backdrop
+ * blur + white/10 border ("glass", below). Background beams after the
+ * Amply purple light effect; purple appears ONLY in the beams.
+ *
+ * Tailwind's default palette, type scale, radii and spacing are cleared so
+ * only these tokens generate utilities. Components use the utilities
+ * (bg-brand-primary, text-neutral-secondary, p-4, rounded-base) and never
+ * a raw hex or px value.
+ */
+
+/* ---------------------------------------------------------------------------
+ * Primitives. Never used directly in components; semantic tokens below
+ * point at these.
+ * ------------------------------------------------------------------------- */
+:root {
+  --black-900: #0c0d0d;
+  --black-850: #111113;
+  --black-800: #17181b;
+  --black-700: #1e2024;
+
+  --white: #f8f8f8;
+  --white-pure: #ffffff;
+  --black-pure: #000000;
+  --grey-100: #e6e6ea;
+  --grey-200: #d0d0d6;
+  --grey-400: #9c9c9c;
+  --grey-500: #6c6c72;
+  --grey-600: #4a4a50;
+
+  /* White-alpha steps — the glass system's neutrals. */
+  --white-a4: rgba(255, 255, 255, 0.04);
+  --white-a8: rgba(255, 255, 255, 0.08);
+  --white-a10: rgba(255, 255, 255, 0.1);
+  --white-a14: rgba(255, 255, 255, 0.14);
+  --white-a20: rgba(255, 255, 255, 0.2);
+  --white-a30: rgba(255, 255, 255, 0.3);
+
+  --neon-100: #f2ffc2;
+  --neon-500: #ccff04;
+  --neon-600: #b8e600;
+  --neon-700: #9fc700;
+
+  --blue-100: #d4dff2;
+  --blue-500: #4288f6;
+
+  --pink-100: #fbcbe4;
+  --pink-500: #f472b6;
+
+  --yellow-100: #f5eed1;
+  --yellow-500: #dec763;
+
+  --red-100: #fec8cd;
+  --red-500: #fb505f;
+  --red-600: #de3b4b;
+  --red-700: #bd2c3c;
+
+  /* Beams only — never on UI surfaces. */
+  --purple-500: #7c5cfc;
+  --purple-700: #5634d8;
+}
+
+@theme {
+  /* Clear Tailwind defaults so only our tokens exist. */
+  --color-*: initial;
+  --text-*: initial;
+  --font-weight-*: initial;
+  --leading-*: initial;
+  --radius-*: initial;
+  --spacing: initial;
+  --spacing-*: initial;
+
+  /* ------------------------------------------------------------------------
+   * Background — bg-*
+   * neutral-primary is the solid ground; neutral-secondary/tertiary are
+   * white-alpha and read as glass over the beams.
+   * ---------------------------------------------------------------------- */
+  --background-color-neutral-primary: var(--black-900);
+  --background-color-neutral-primary-hovered: var(--black-800);
+  --background-color-neutral-primary-pressed: var(--black-700);
+  --background-color-neutral-primary-disabled: var(--black-850);
+  --background-color-neutral-secondary: var(--white-a8);
+  --background-color-neutral-secondary-hovered: var(--white-a14);
+  --background-color-neutral-secondary-pressed: var(--white-a20);
+  --background-color-neutral-tertiary: var(--white-a14);
+  --background-color-neutral-tertiary-hovered: var(--white-a20);
+  /* Inverse = the white primary-action surface (buttons, active tabs). */
+  --background-color-neutral-inverse: var(--white-pure);
+  --background-color-neutral-inverse-hovered: var(--grey-100);
+  --background-color-neutral-inverse-pressed: var(--grey-200);
+
+  --background-color-brand-primary: var(--neon-500);
+  --background-color-brand-primary-hovered: var(--neon-600);
+  --background-color-brand-primary-pressed: var(--neon-700);
+  --background-color-brand-primary-disabled: var(--black-700);
+  --background-color-brand-secondary: color-mix(in srgb, var(--neon-500) 15%, transparent);
+  --background-color-brand-secondary-hovered: color-mix(in srgb, var(--neon-500) 25%, transparent);
+
+  /* Scrim behind dialogs/panels. */
+  --background-color-overlay: rgba(0, 0, 0, 0.6);
+
+  --background-color-success: var(--neon-500);
+  --background-color-warning: var(--yellow-500);
+  --background-color-danger: var(--red-500);
+  --background-color-danger-hovered: var(--red-600);
+  --background-color-danger-pressed: var(--red-700);
+  --background-color-info: var(--blue-500);
+  --background-color-accent-pink: var(--pink-500);
+
+  /* Soft tinted chips (finance-app nodes 47094:19677 / 47131:814):
+     10% tint fill + 10% tint border + full-strength text. */
+  --background-color-danger-soft: color-mix(in srgb, var(--red-500) 10%, transparent);
+  --background-color-success-soft: color-mix(in srgb, var(--neon-500) 10%, transparent);
+  --background-color-info-soft: color-mix(in srgb, var(--blue-500) 10%, transparent);
+  --background-color-warning-soft: color-mix(in srgb, var(--yellow-500) 10%, transparent);
+  --background-color-pink-soft: color-mix(in srgb, var(--pink-500) 10%, transparent);
+  /* Neutral chip fill (headline counts): white at 10%. */
+  --background-color-neutral-soft: var(--white-a10);
+
+  /* ------------------------------------------------------------------------
+   * Text — text-*
+   * text-neutral-inverse is the dark ink for bright surfaces (neon, yellow,
+   * white).
+   * ---------------------------------------------------------------------- */
+  --text-color-neutral-primary: var(--white);
+  --text-color-neutral-primary-disabled: var(--grey-600);
+  --text-color-neutral-secondary: var(--grey-400);
+  --text-color-neutral-tertiary: var(--grey-500);
+  /* Placeholder ink (finance-app input: white at 30%). */
+  --text-color-neutral-faint: var(--white-a30);
+  --text-color-neutral-inverse: var(--black-pure);
+
+  --text-color-brand-primary: var(--neon-500);
+  --text-color-brand-secondary: var(--neon-100);
+
+  --text-color-success: var(--neon-500);
+  --text-color-warning: var(--yellow-500);
+  --text-color-danger: var(--red-500);
+  --text-color-info: var(--blue-500);
+  --text-color-pink: var(--pink-500);
+
+  /* ------------------------------------------------------------------------
+   * Border — border-*  (also focus rings: ring-* / outline-*)
+   * ---------------------------------------------------------------------- */
+  --border-color-neutral-primary: var(--white-a14);
+  --border-color-neutral-primary-hovered: var(--white-a20);
+  --border-color-neutral-primary-pressed: var(--white-a30);
+  --border-color-neutral-primary-disabled: var(--white-a8);
+  --border-color-neutral-secondary: var(--white-a10);
+  --border-color-neutral-inverse: var(--white);
+
+  --border-color-brand: var(--neon-500);
+  --border-color-brand-hovered: var(--neon-600);
+
+  --border-color-success: var(--neon-500);
+  --border-color-warning: var(--yellow-500);
+  --border-color-danger: var(--red-500);
+  --border-color-info: var(--blue-500);
+  --border-color-danger-soft: color-mix(in srgb, var(--red-500) 10%, transparent);
+  --border-color-success-soft: color-mix(in srgb, var(--neon-500) 10%, transparent);
+  --border-color-info-soft: color-mix(in srgb, var(--blue-500) 10%, transparent);
+  --border-color-warning-soft: color-mix(in srgb, var(--yellow-500) 10%, transparent);
+  --border-color-pink-soft: color-mix(in srgb, var(--pink-500) 10%, transparent);
+
+  --outline-color-brand: var(--neon-500);
+  --ring-color-brand: var(--neon-500);
+
+  /* ------------------------------------------------------------------------
+   * Typography — Hanken Grotesk (free HK Grotesk, approved
+   * 2026-09-19). text-{size} carries its paired line height.
+   * ---------------------------------------------------------------------- */
+  --font-sans: var(--font-hanken), ui-sans-serif, system-ui, sans-serif;
+
+  --text-sm: 14px;
+  --text-sm--line-height: 20px;
+  --text-base: 16px;
+  --text-base--line-height: 22px;
+  --text-lg: 18px;
+  --text-lg--line-height: 24px;
+  --text-xl: 22px;
+  --text-xl--line-height: 28px;
+  --text-2xl: 26px;
+  --text-2xl--line-height: 32px;
+  --text-3xl: 30px;
+  --text-3xl--line-height: 34px;
+  --text-4xl: 40px;
+  --text-5xl: 64px;
+  --text-6xl: 96px;
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --leading-sm: 20px;
+  --leading-base: 22px;
+  --leading-lg: 24px;
+  --leading-xl: 28px;
+  --leading-2xl: 32px;
+  --leading-3xl: 34px;
+
+  /* ------------------------------------------------------------------------
+   * Spacing + sizing — 4px base unit. Only these steps exist.
+   * ---------------------------------------------------------------------- */
+  --spacing-0: 0px;
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-5: 20px;
+  --spacing-6: 24px;
+  --spacing-8: 32px;
+  --spacing-10: 40px;
+  --spacing-12: 48px;
+  --spacing-16: 64px;
+  /* Info-dot size (spec, node 47047:10656): 6px cyan marker. */
+  --spacing-dot: 6px;
+  /* Spec 2026-09-21: 2px gaps inside tab clusters and paired
+     action buttons (planner Start / Mark done). */
+  --spacing-hairline: 2px;
+  /* Navbar wordmark height (spec 2026-09-21): 16px. */
+  --spacing-logo: 16px;
+
+  /* ------------------------------------------------------------------------
+   * Layout widths — app-level. Page container: 1440px, 32px gutters
+   * (spec, 2026-09-19).
+   * ---------------------------------------------------------------------- */
+  --container-page: 1440px;
+  --container-column: 256px;
+  --container-search: 320px;
+  --container-panel: 400px;
+
+  /* ------------------------------------------------------------------------
+   * Radius — spec 2026-09-19: badges, tabs, buttons, dropdowns and
+   * inputs 6 (base), cards 10 (lg), dialogs 16 (xl).
+   * ---------------------------------------------------------------------- */
+  --radius-none: 0px;
+  --radius-sm: 4px;
+  --radius-base: 6px;
+  --radius-lg: 10px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+
+  /*
+   * Border width (0, 1, 2, 4px) and opacity match Tailwind's built-in
+   * border / border-2 / border-4 and opacity-25 … -100 utilities.
+   */
+}
+
+/* Animatable gradient strength for glass surfaces (spec: hover
+   lifts the gradient ends from 10% to 20%, softly). */
+@property --glass-tint {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 10%;
+}
+
+@property --glass-stroke {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 10%;
+}
+
+@layer components {
+  /*
+   * Glass surface (finance-app card node 46993:5628): the master
+   * gradient — 144deg, tint% -> 1% (at 31%) -> tint% — white/10 border,
+   * 20px backdrop blur. Tinted variants only swap --glass-hue (and,
+   * where their Figma node says so, the border hue); the gradient is
+   * one formula everywhere. .glass-interactive raises the tint to 20%
+   * on hover with a soft ease.
+   */
+  .glass {
+    --glass-hue: var(--white-pure);
+    background-image: linear-gradient(
+      144deg,
+      color-mix(in srgb, var(--glass-hue) var(--glass-tint), transparent) 0%,
+      color-mix(in srgb, var(--glass-hue) 1%, transparent) 31%,
+      color-mix(in srgb, var(--glass-hue) var(--glass-tint), transparent) 100%
+    );
+    /* Stroke matches the card hue (spec): 10% rest, 20% hover. */
+    border: 1px solid
+      color-mix(in srgb, var(--glass-hue) var(--glass-stroke), transparent);
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+    /* Own GPU layer: without it Chromium mis-samples the blur along the
+       top edge whenever it re-composites the page (e.g. while rendering
+       the tab hover-card preview), leaving a light band on every card. */
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    transition:
+      --glass-tint 250ms cubic-bezier(0.22, 1, 0.36, 1),
+      --glass-stroke 250ms cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 250ms cubic-bezier(0.22, 1, 0.36, 1),
+      color 200ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .glass-interactive:hover {
+    --glass-tint: 20%;
+    --glass-stroke: 20%;
+  }
+
+  /*
+   * Input surface (finance-app node 47062:17141): vertical white-alpha
+   * gradient + white/10 border. Border color yields to border-* utilities
+   * (hover, focus, invalid).
+   */
+  .glass-input {
+    background: linear-gradient(180deg, transparent, var(--white-a10));
+    border: 1px solid var(--white-a10);
+    /* Spec: 10px backdrop blur so the grain behind stays quiet. */
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    /* Same Chromium re-composite fix as .glass. */
+    transform: translateZ(0);
+    backface-visibility: hidden;
+  }
+
+  /*
+   * State-tinted glass (finance-app nodes 47037:5720 / 47131:803).
+   * Applied together with .glass; these override only the fill.
+   * danger: rejected & ghosted cards. positive: to-contact & won cards.
+   */
+  .glass-danger {
+    --glass-hue: var(--red-500);
+  }
+
+  /* Card tint always matches its badge hue (design rule): every tinted
+     card uses the same diagonal gradient (10% → 1% → 10%) in its own
+     color, with a same-hue 10% border. */
+  .glass-info {
+    --glass-hue: var(--blue-500);
+  }
+
+  .glass-success {
+    --glass-hue: var(--neon-500);
+  }
+
+  /* Replied cards (node 47135:901): diagonal pink tint, glass border. */
+  .glass-pink {
+    --glass-hue: var(--pink-500);
+  }
+
+  /* In-progress cards: same diagonal gradient in yellow. */
+  .glass-warning {
+    --glass-hue: var(--yellow-500);
+  }
+
+  /* Planner block with a running timer (spec 2026-10-01): the same
+     diagonal gradient in the neon accent, paired with the neon stroke
+     (border-brand). */
+  .glass-brand {
+    --glass-hue: var(--neon-500);
+  }
+
+  /*
+   * Fixed full-viewport background. The exported grain texture
+   * (/bg-ground.webp) is the ground; the violet light from the
+   * top-right corner is drawn OVER it as CSS gradients, so it renders
+   * at the device's native resolution — no banding or upscaling blur
+   * at any screen size. Layer order: core bloom, wide halo, diagonal
+   * wash, texture.
+   */
+  .app-beams {
+    position: fixed;
+    inset: 0;
+    z-index: -10;
+    pointer-events: none;
+    background-color: var(--black-900);
+    background-image:
+      radial-gradient(
+        30% 38% at 93% -4%,
+        color-mix(in srgb, var(--purple-500) 26%, transparent),
+        transparent 70%
+      ),
+      radial-gradient(
+        55% 60% at 80% 12%,
+        color-mix(in srgb, var(--purple-500) 12%, transparent),
+        transparent 70%
+      ),
+      linear-gradient(
+        225deg,
+        color-mix(in srgb, var(--purple-500) 9%, transparent),
+        transparent 50%
+      ),
+      url("/bg-ground.webp");
+    background-size:
+      auto,
+      auto,
+      auto,
+      cover;
+    background-position:
+      0 0,
+      0 0,
+      0 0,
+      right top;
+    background-repeat: no-repeat;
+  }
+}
+
+/* Spec: page content below the top bar drifts in — 24px up,
+   gentle fade, soft ease. Replays on route changes; frozen under
+   prefers-reduced-motion by the global rule below. */
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Lighter sibling of page-enter for in-view swaps (niche tabs,
+   pagination): smaller rise, quicker, same soft curve. */
+@keyframes content-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Fill mode is `backwards`, not `both`: once the entrance ends the
+   animation must release the element. A lingering filled transform/
+   opacity keeps the wrapper on its own compositing layer, and the glass
+   cards' backdrop blur then samples past that layer's top edge — a
+   light band across the first row of cards on every re-composite. */
+@layer components {
+  /* Spec 2026-09-29: keep the motion, lose the wait. Short and
+     snappy (180/140ms, ease-out) reads as responsive; the old 500/400ms
+     rises made every navigation feel delayed. */
+  .page-enter {
+    animation: page-enter 180ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  }
+
+  .content-enter {
+    animation: content-enter 140ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  }
+}
+
+@layer base {
+  /* Soft interaction feel everywhere: links and buttons ease their
+     color/background/border/opacity changes instead of snapping.
+     Utilities can still override per element. */
+  a,
+  button,
+  [role="button"] {
+    transition-property: color, background-color, border-color, opacity;
+    transition-duration: 200ms;
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  html {
+    color-scheme: dark;
+    background: var(--black-900);
+  }
+
+  /* Accessibility: collapse all motion for people who ask for less. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  body {
+    /* Page color comes from .app-beams (fixed, behind everything). */
+    @apply font-sans text-sm font-regular text-neutral-primary antialiased;
+  }
+}
