@@ -14,6 +14,8 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
   title: SITE.name,
   description: SITE.description,
+  authors: [{ name: SITE.author.name, url: SITE.author.url }],
+  creator: SITE.author.name,
   // Link previews (LinkedIn, Slack, X); the image is app/opengraph-image.png.
   openGraph: {
     type: "website",

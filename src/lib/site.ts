@@ -6,6 +6,9 @@ export const SITE = {
   description:
     "Outreach CRM and daily time-blocking planner in one keyboard-first app. Live demo with fictional data.",
   repo: "https://github.com/srdjancul/outreach-planner-demo",
-  // Set to show "Built by …" in the app; null keeps it anonymous.
-  author: null as { name: string; url: string } | null,
+  author: {
+    name: "Srdjan Culibrk",
+    url: "https://byserg.com",
+    linkedin: "https://www.linkedin.com/in/srdjan-culibrk",
+  },
 };

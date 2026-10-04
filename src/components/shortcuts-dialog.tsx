@@ -118,20 +118,25 @@ export function ShortcutsDialog() {
             ))}
           </div>
           <p className="border-t border-neutral-secondary pt-4 text-neutral-tertiary">
-            {SITE.author && (
-              <>
-                Built by{" "}
-                <a
-                  href={SITE.author.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className={linkClass}
-                >
-                  {SITE.author.name}
-                </a>
-                {" · "}
-              </>
-            )}
+            Built by{" "}
+            <a
+              href={SITE.author.url}
+              target="_blank"
+              rel="noreferrer"
+              className={linkClass}
+            >
+              {SITE.author.name}
+            </a>
+            {" · "}
+            <a
+              href={SITE.author.linkedin}
+              target="_blank"
+              rel="noreferrer"
+              className={linkClass}
+            >
+              LinkedIn
+            </a>
+            {" · "}
             <a
               href={SITE.repo}
               target="_blank"

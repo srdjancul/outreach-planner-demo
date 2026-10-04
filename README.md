@@ -6,6 +6,10 @@ keyboard-first app.**
 **[Live demo →](https://outreach-planner-demo.vercel.app)** · No sign-up.
 It runs in your browser with fictional sample data.
 
+Built by **[Srdjan Culibrk](https://byserg.com)**:
+[byserg.com](https://byserg.com) ·
+[LinkedIn](https://www.linkedin.com/in/srdjan-culibrk)
+
 ![Outreach Planner: kanban board and daily planner](docs/screenshots/hero.jpg)
 
 I built it as a daily tool for one job: reaching out to people, and keeping
@@ -140,6 +144,17 @@ in `src/lib/demo/store.ts`.
 ```bash
 npm run verify     # typecheck + lint + production build
 ```
+
+---
+
+## Author
+
+**Srdjan Culibrk** designed and built it.
+
+- Website: [byserg.com](https://byserg.com)
+- LinkedIn: [linkedin.com/in/srdjan-culibrk](https://www.linkedin.com/in/srdjan-culibrk)
+
+Feedback and questions are welcome. Open an issue or reach out on LinkedIn.
 
 ---
 
