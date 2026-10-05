@@ -1,5 +1,5 @@
+import Image from "next/image";
 import Link from "next/link";
-import { Zap } from "lucide-react";
 
 import { ResetDemoButton } from "@/components/reset-demo-button";
 import { ShortcutsDialog } from "@/components/shortcuts-dialog";
@@ -20,11 +20,16 @@ export function TopBar({ active }: { active: (typeof tabs)[number]["key"] }) {
           href="/"
           className="justify-self-start rounded-sm outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
         >
-          {/* Text wordmark — swap in your own logo here. */}
-          <span className="flex items-center gap-1 font-bold">
-            <Zap className="size-4 text-brand-primary" aria-hidden />
-            <span className="max-sm:hidden">Outreach Planner</span>
-          </span>
+          {/* Wordmark, 16px tall. Replace public/logo-white.png with your
+              own logo (keep width/height in sync with the file). */}
+          <Image
+            src="/logo-white.png"
+            alt="SERG"
+            width={2328}
+            height={444}
+            priority
+            className="h-logo w-auto"
+          />
         </Link>
 
         <nav className="flex items-center gap-hairline justify-self-center">

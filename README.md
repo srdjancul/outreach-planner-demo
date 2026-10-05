@@ -141,6 +141,9 @@ and accept the defaults.
 To change the sample data, edit `src/lib/demo/seed.ts` and bump `VERSION`
 in `src/lib/demo/store.ts`.
 
+To make it yours, replace the logo in `public/logo-white.png` and the
+browser-tab icon in `src/app/icon.png`.
+
 ```bash
 npm run verify     # typecheck + lint + production build
 ```
