@@ -72,11 +72,11 @@ function withBlock(
   );
 }
 
-// Starting one timer stops whichever one runs — only one at a time.
+// Timers are independent: starting one leaves the others running.
 export async function startBlock(id: string, date: string) {
-  return withBlock(id, date, "Could not start the timer.", (block, data) => {
-    data.blocks.forEach(bank);
-    if (block.status === "done") return;
+  return withBlock(id, date, "Could not start the timer.", (block) => {
+    // Already running: keep the clock, don't reset it.
+    if (block.started_at || block.status === "done") return;
     block.started_at = nowISO();
     block.status = "in_progress";
   });

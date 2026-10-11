@@ -50,8 +50,8 @@ the public demo edition. Every person, company and note in it is made up.
 
 - Three blocks per day, Monday to Saturday: research (2h), client work
   (6h) and internal projects (2h).
-- **A start/stop timer per block.** Only one runs at a time, so starting
-  one banks the time of the other.
+- **A start/stop timer per block.** Timers are independent, so several
+  can run at once, each counting its own time.
 - Edit planned hours per day, and correct tracked time by hand while the
   timer is stopped.
 - Tasks per block plus loose day tasks: add, check off, rename, delete.
@@ -88,9 +88,9 @@ shortcut. On a phone, columns stack and drag-and-drop works by touch.
 - **View state lives in the URL.** Group, niche and page are query
   parameters, so the back button and refresh work and switching views
   needs no round trip.
-- **One running timer.** Starting a block stops and banks whichever block
-  is running. Tracked time can be edited only while its timer is stopped,
-  so a live timer is never overwritten.
+- **Independent timers.** Every block counts its own time, so research
+  and client work can run side by side. Tracked time can be edited only
+  while its timer is stopped, so a live timer is never overwritten.
 - **A strict token-based design system.** Every color, size, radius and
   surface is a token in `src/app/globals.css`. Tailwind's default palette
   is cleared, so off-system values don't even compile into CSS.
