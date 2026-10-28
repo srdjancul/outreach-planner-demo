@@ -122,8 +122,9 @@ npm run dev        # http://localhost:3200
 ```
 
 No environment variables, database or accounts are needed. Your edits are
-saved in your browser (localStorage), and **Reset demo** in the top bar
-restores the sample data.
+saved in your browser (localStorage). **Reset** in the top bar either
+clears everything (start empty, for your own contacts) or restores the
+sample data.
 
 To deploy your own copy, import the repo in [Vercel](https://vercel.com/new)
 and accept the defaults.

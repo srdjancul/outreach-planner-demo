@@ -7,8 +7,9 @@ import { buildSeed } from "@/lib/demo/seed";
  * The demo's "database": one JSON document in localStorage, per browser.
  *
  * Every visitor starts from the same fictional seed (see seed.ts), edits
- * stay on their own device, and "Reset demo" puts the seed back. Nothing
- * ever leaves the browser — there is no server, no account, no network.
+ * stay on their own device, and "Reset" either empties everything or puts
+ * the seed back. Nothing ever leaves the browser — there is no server, no
+ * account, no network.
  */
 
 type Tables = Database["public"]["Tables"];
@@ -70,6 +71,14 @@ export function write<T>(mutate: (data: DemoData) => T): T {
   return result;
 }
 
+// An empty board and planner — kept as an explicit save, so the next load
+// doesn't fall back to the sample data.
+export function startEmpty() {
+  cache = { version: VERSION, contacts: [], touches: [], blocks: [], tasks: [] };
+  persist(cache);
+}
+
+// Back to the fictional sample data.
 export function resetDemo() {
   try {
     window.localStorage.removeItem(KEY);
