@@ -1,6 +1,6 @@
 "use client";
 
-import { RotateCcw } from "lucide-react";
+import { RotateCcw, X } from "lucide-react";
 import { Dialog } from "radix-ui";
 
 import { Button } from "@/components/ui/button";
@@ -31,18 +31,27 @@ export function ResetDemoButton() {
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 bg-overlay data-[state=open]:animate-in data-[state=open]:fade-in-0" />
         <Dialog.Content className="glass fixed top-1/2 left-1/2 flex w-[calc(100%-32px)] max-w-panel -translate-x-1/2 -translate-y-1/2 flex-col gap-4 rounded-xl p-4 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95">
-          <Dialog.Title className="text-lg font-medium">Reset data</Dialog.Title>
+          <div className="flex items-center justify-between gap-4">
+            <Dialog.Title className="text-lg font-medium">Reset data</Dialog.Title>
+            <Dialog.Close asChild>
+              <Button variant="ghost" size="icon-sm" aria-label="Close">
+                <X />
+              </Button>
+            </Dialog.Close>
+          </div>
           <Dialog.Description className="text-neutral-secondary">
             Everything you added or changed in this browser will be deleted.
             Start with an empty board for your own contacts, or bring back the
             sample data.
           </Dialog.Description>
-          <div className="flex flex-wrap justify-end gap-2">
-            <Dialog.Close asChild>
-              <Button type="button" variant="ghost">
-                Cancel
-              </Button>
-            </Dialog.Close>
+          <div className="flex flex-wrap gap-2">
+            <Button
+              type="button"
+              variant="danger"
+              onClick={() => apply(startEmpty)}
+            >
+              Start empty
+            </Button>
             <Button
               type="button"
               variant="secondary"
@@ -50,13 +59,6 @@ export function ResetDemoButton() {
               onClick={() => apply(resetDemo)}
             >
               Restore sample data
-            </Button>
-            <Button
-              type="button"
-              variant="danger"
-              onClick={() => apply(startEmpty)}
-            >
-              Start empty
             </Button>
           </div>
         </Dialog.Content>
